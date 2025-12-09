@@ -1,1 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Group 8 IT 304 – Enigma Scanner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ==========================
+       GLOBAL STYLES
+       ========================== */
+    :root {
+      --bg-color: #050816;
+      --bg-alt: #0b1020;
+      --accent: #4f46e5;
+      --accent-soft: rgba(79, 70, 229, 0.12);
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --text-secondary: #cbd5e1;
+      --danger: #f97373;
+      --success: #4ade80;
+      --warning: #fb923c;
+      --shadow-soft: 0 22px 60px rgba(15, 23, 42, 0.6);
+      --radius-xl: 20px;
+      --radius-2xl: 26px;
+      --radius-pill: 999px;
+      --transition-fast: 0.18s ease-out;
+    }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+      border-radius: 12px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(90deg, #38bdf8, #a855f7);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .section-subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      max-width: 600px;
+    }
+
+    /* ==========================
+       HEADER / NAV
+       ========================== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: linear-gradient(to bottom, rgba(5, 6, 14, 0.95), rgba(5, 6, 14, 0.6));
+      border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #6366f1, #22d3ee);
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.45);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .brand-text .title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .brand-text .subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-scan {
+      padding: 0.6rem 1.2rem;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: linear-gradient(135deg, #6366f1, #22d3ee);
+      color: white;
+      font-weight: 500;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(79, 70, 229, 0.4);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .btn-scan:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 40px rgba(79, 70, 229, 0.6);
+    }
+
+    /* ==========================
+       HERO SECTION
+       ========================== */
+    .hero {
+      padding: 3rem 0 2rem;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.1;
+    }
+
+    .hero h1 .highlight {
+      background: linear-gradient(90deg, #38bdf8, #a855f7);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-description {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 700px;
+      margin: 0 auto 2rem;
+    }
+
+    /* ==========================
+       MAIN DASHBOARD LAYOUT
+       ========================== */
+    .dashboard {
+      padding: 1rem 0 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dashboard-card {
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(10px);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(34, 211, 238, 0.2));
+      color: var(--accent);
+    }
+
+    .card-description {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    /* ==========================
+       SCAN VISUALIZATION
+       ========================== */
+    .scan-visualization {
+      grid-column: span 2;
+    }
+
+    @media (max-width: 900px) {
+      .scan-visualization {
+        grid-column: span 1;
+      }
+    }
+
+    .image-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .comparison-card {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      height: 280px;
+    }
+
+    .comparison-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .comparison-label {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+    }
+
+    .comparison-label.real {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: rgba(34, 197, 94, 0.5);
+      color: #4ade80;
+    }
+
+    .comparison-label.ai {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #f97373;
+    }
+
+    .confidence-meter {
+      margin-top: 1.5rem;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+
+    .meter-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+
+    .meter-bars {
+      display: flex;
+      gap: 0.5rem;
+      height: 24px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .meter-real {
+      flex: 0 0 65%;
+      background: linear-gradient(90deg, #10b981, #34d399);
+      position: relative;
+    }
+
+    .meter-ai {
+      flex: 0 0 35%;
+      background: linear-gradient(90deg, #ef4444, #f87171);
+    }
+
+    .meter-percent {
+      position: absolute;
+      top: 50%;
+      right: 1rem;
+      transform: translateY(-50%);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    /* ==========================
+       FEATURE GRID
+       ========================== */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .feature-card {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 16px;
+      padding: 1.2rem;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      transition: transform var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .feature-icon.detect {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
+      color: #f97373;
+    }
+
+    .feature-icon.metadata {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1));
+      color: #4ade80;
+    }
+
+    .feature-icon.analyze {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
+      color: #60a5fa;
+    }
+
+    .feature-icon.privacy {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(168, 85, 247, 0.1));
+      color: #a855f7;
+    }
+
+    .feature-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-details {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* ==========================
+       STATS GRID
+       ========================== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .stat-card {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 16px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0.5rem 0;
+    }
+
+    .stat-value.accuracy {
+      color: #4ade80;
+    }
+
+    .stat-value.speed {
+      color: #60a5fa;
+    }
+
+    .stat-value.detections {
+      color: #f97373;
+    }
+
+    .stat-value.images {
+      color: #a855f7;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .stat-explanation {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+
+    /* ==========================
+       AI ARTIFACT GALLERY
+       ========================== */
+    .artifact-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .artifact-card {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      height: 180px;
+    }
+
+    .artifact-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .artifact-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .artifact-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0.8rem;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+      font-size: 0.8rem;
+    }
+
+    .artifact-description {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 0.8rem;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent);
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+    }
+
+    /* ==========================
+       HOW IT WORKS SECTION
+       ========================== */
+    .process-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .process-steps {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .process-step {
+      text-align: center;
+      padding: 1rem;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #22d3ee);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.8rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .step-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-description {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* ==========================
+       FOOTER
+       ========================== */
+    footer {
+      margin-top: 3rem;
+      padding: 2rem 0;
+      border-top: 1px solid rgba(148, 163, 184, 0.2);
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .team-members {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+      flex-wrap: wrap;
+    }
+
+    .member {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      max-width: 120px;
+    }
+
+    .member-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #22d3ee);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .member-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .member-role {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    /* ==========================
+       GLOW EFFECTS
+       ========================== */
+    .glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.3;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .glow-1 {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, #4f46e5, transparent 70%);
+      top: 10%;
+      right: 10%;
+    }
+
+    .glow-2 {
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, #22d3ee, transparent 70%);
+      bottom: 10%;
+      left: 10%;
+    }
+
+    /* ==========================
+       UTILITY CLASSES
+       ========================== */
+    .text-center {
+      text-align: center;
+    }
+
+    .mb-1 {
+      margin-bottom: 1rem;
+    }
+
+    .mb-2 {
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- GLOW EFFECTS -->
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="container">
+      <div class="nav">
+        <div class="brand">
+          <div class="brand-logo">
+            <i class="fas fa-eye"></i>
+          </div>
+          <div class="brand-text">
+            <div class="title">Enigma Scanner</div>
+            <div class="subtitle">AI Image Detection Dashboard</div>
+          </div>
+        </div>
+        <div class="nav-cta">
+          <button class="btn-scan">
+            <i class="fas fa-search"></i>
+            Scan Image
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="container">
+      <h1>Detect <span class="highlight">AI-Generated Images</span> with Precision</h1>
+      <p class="hero-description">
+        Enigma Scanner is an advanced detection tool that analyzes images for AI-generated artifacts, 
+        helping journalists, educators, and security professionals verify content authenticity in the age of generative AI.
+      </p>
+    </div>
+  </section>
+
+  <!-- MAIN DASHBOARD -->
+  <main class="container">
+    <!-- SCAN VISUALIZATION -->
+    <div class="dashboard-card scan-visualization">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-icon">
+            <i class="fas fa-camera"></i>
+          </div>
+          Real vs AI Image Analysis
+        </div>
+        <div style="color: var(--text-muted); font-size: 0.9rem;">
+          <i class="fas fa-shield-alt"></i> Trust Score: 92%
+        </div>
+      </div>
+      
+      <p class="card-description">
+        Our scanner compares authentic photographs with AI-generated images, identifying subtle differences 
+        in texture, lighting consistency, and physical plausibility that often reveal synthetic origins.
+      </p>
+      
+      <div class="image-comparison">
+        <div class="comparison-card">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Real human portrait">
+          <div class="comparison-label real">
+            <i class="fas fa-check-circle"></i> Real Photo
+          </div>
+          <div class="artifact-description">
+            Natural skin texture, consistent lighting, authentic imperfections
+          </div>
+        </div>
+        
+        <div class="comparison-card">
+          <img src="https://images.unsplash.com/photo-1623854767648-e7bb8009f0db?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="AI generated face">
+          <div class="comparison-label ai">
+            <i class="fas fa-robot"></i> AI Generated
+          </div>
+          <div class="artifact-description">
+            Overly smooth skin, unrealistic eye reflections, subtle texture repetition
+          </div>
+        </div>
+      </div>
+      
+      <div class="confidence-meter">
+        <div class="meter-header">
+          <div>Detection Confidence Analysis</div>
+          <div>High Accuracy Algorithm</div>
+        </div>
+        <div class="meter-bars">
+          <div class="meter-real">
+            <div class="meter-percent">65% Real</div>
+          </div>
+          <div class="meter-ai">35% AI</div>
+        </div>
+        <p class="stat-explanation" style="margin-top: 1rem;">
+          The scanner analyzes 32+ detection signals including pixel-level artifacts, metadata anomalies, 
+          and contextual inconsistencies to determine authenticity probability.
+        </p>
+        <p class="card-description" style="font-style: italic; color: var(--text-muted); margin-top: 1rem;">
+  “Stolen money is almost never recovered: Due to rapid laundering through money-mule chains and crypto mixers,
+  fewer than 5 percent of funds lost to sophisticated vishing scams are ever recovered,” it said. -The Epoch Times
+</p>
+      </div>
+    </div>
+    
+    <!-- KEY FEATURES -->
+    <div class="dashboard-card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-icon">
+            <i class="fas fa-cogs"></i>
+          </div>
+          Advanced Detection Features
+        </div>
+      </div>
+      
+      <p class="card-description">
+        Enigma Scanner combines multiple detection methodologies to provide comprehensive analysis, 
+        reducing false positives while maintaining high detection rates across various image types.
+      </p>
+      
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon detect">
+            <i class="fas fa-search"></i>
+          </div>
+          <h3 class="feature-title">Pixel-Level Analysis</h3>
+          <p class="feature-details">
+            Detects subtle AI artifacts in textures, patterns, and edges using frequency analysis 
+            and noise profiling. Identifies repetitive elements common in generated content.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon metadata">
+            <i class="fas fa-database"></i>
+          </div>
+          <h3 class="feature-title">Metadata Examination</h3>
+          <p class="feature-details">
+            Inspects EXIF data, file history, and known AI generator signatures. While metadata 
+            can be manipulated, its absence or inconsistencies raise authenticity concerns.
+          </p>
+          <p class="hero-description" style="font-style: italic; margin-top: 1rem; color: var(--text-muted);">
+  “Fraudsters use generative AI tools to produce realistic images and videos, from face swaps and morphs
+  to entirely fake identities. These synthetic assets are the building blocks of large-scale fraud.” -CNBC
+</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon analyze">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h3 class="feature-title">Contextual Analysis</h3>
+          <p class="feature-details">
+            Evaluates whether shadows, reflections, and proportions follow physical laws. 
+            Identifies "uncanny" AI images that appear realistic but contain logical inconsistencies.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon privacy">
+            <i class="fas fa-user-shield"></i>
+          </div>
+          <h3 class="feature-title">Privacy-First Design</h3>
+          <p class="feature-details">
+            Optional local processing ensures sensitive images never leave your device. 
+            Enterprise version offers secure cloud analysis with end-to-end encryption.
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- PERFORMANCE STATS -->
+    <div class="dashboard-card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          Performance Metrics
+        </div>
+      </div>
+      
+      <p class="card-description">
+        Our system has been trained on over 500,000 images including both authentic photographs 
+        and AI-generated content from various models including Stable Diffusion, DALL-E, and Midjourney.
+      </p>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <i class="fas fa-bullseye" style="font-size: 1.5rem; color: #4ade80;"></i>
+          <div class="stat-value accuracy">94.2%</div>
+          <div class="stat-label">Detection Accuracy</div>
+          <div class="stat-explanation">
+            Tested against diverse dataset with controlled variables
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <i class="fas fa-bolt" style="font-size: 1.5rem; color: #60a5fa;"></i>
+          <div class="stat-value speed">2.1s</div>
+          <div class="stat-label">Avg. Scan Time</div>
+          <div class="stat-explanation">
+            Parallel processing across multiple detection modules
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <i class="fas fa-exclamation-triangle" style="font-size: 1.5rem; color: #f97373;"></i>
+          <div class="stat-value detections">12.5K</div>
+          <div class="stat-label">AI Images Detected</div>
+          <div class="stat-explanation">
+            Across academic, journalistic, and security use cases
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <i class="fas fa-images" style="font-size: 1.5rem; color: #a855f7;"></i>
+          <div class="stat-value images">45K+</div>
+          <div class="stat-label">Images Analyzed</div>
+          <div class="stat-explanation">
+            Since system deployment in educational institutions
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- HOW IT WORKS -->
+    <div class="dashboard-card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-icon">
+            <i class="fas fa-play-circle"></i>
+          </div>
+          How Enigma Scanner Works
+        </div>
+      </div>
+      
+      <p class="card-description mb-2">
+        Our four-step process ensures thorough analysis while maintaining user-friendly interaction. 
+        Each step provides transparent feedback about what the system is detecting and why.
+      </p>
+      
+      <div class="process-steps">
+        <div class="process-step">
+          <div class="step-number">1</div>
+          <div class="step-title">Upload</div>
+          <div class="step-description">
+            User uploads or drags image into interface. System validates file type and size.
+          </div>
+        </div>
+        
+        <div class="process-step">
+          <div class="step-number">2</div>
+          <div class="step-title">Analyze</div>
+          <div class="step-description">
+            Parallel processing across detection modules: pixel, metadata, and contextual analysis.
+          </div>
+        </div>
+        
+        <div class="process-step">
+          <div class="step-number">3</div>
+          <div class="step-title">Aggregate</div>
+          <div class="step-description">
+            Scores combined with weighted algorithms into comprehensive authenticity assessment.
+          </div>
+        </div>
+        
+        <div class="process-step">
+          <div class="step-number">4</div>
+          <div class="step-title">Report</div>
+          <div class="step-description">
+            Detailed findings with visual explanations and confidence scores for informed decisions.
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- AI ARTIFACT GALLERY -->
+    <div class="dashboard-card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-icon">
+            <i class="fas fa-images"></i>
+          </div>
+          Common AI Image Artifacts
+        </div>
+      </div>
+      
+      <p class="card-description">
+        These visual examples showcase typical artifacts found in AI-generated images. 
+        While AI models are improving, certain patterns remain difficult to generate realistically.
+      </p>
+      
+      <div class="artifact-gallery">
+        <div class="artifact-card">
+          <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="AI generated texture">
+          <div class="artifact-overlay">
+            Repetitive Textures
+          </div>
+          <div class="artifact-description">
+            Unnatural pattern repetition in fabrics or backgrounds
+          </div>
+        </div>
+        
+        <div class="artifact-card">
+          <img src="https://images.unsplash.com/photo-1623854767648-e7bb8009f0db?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="AI face imperfections">
+          <div class="artifact-overlay">
+            Eye Asymmetry
+          </div>
+          <div class="artifact-description">
+            Mismatched eye reflections, pupils, or eyelid shapes
+          </div>
+        </div>
+        
+        <div class="artifact-card">
+          <img src="https://images.unsplash.com/photo-1620428268482-cf1851a36764?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="AI hand generation">
+          <div class="artifact-overlay">
+            Hand Imperfections
+          </div>
+          <div class="artifact-description">
+            Extra fingers, unnatural joints, or incorrect proportions
+          </div>
+        </div>
+        
+        <div class="artifact-card">
+          <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="AI text generation">
+          <div class="artifact-overlay">
+            Text Inconsistencies
+          </div>
+          <div class="artifact-description">
+            Gibberish text, impossible fonts, or logical letter sequences
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">
+        Enigma Scanner • IT 304 Project
+      </div>
+      <div style="color: var(--text-secondary); margin-bottom: 1.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+        A conceptual AI detection tool designed for academic integrity, journalistic verification, 
+        and digital security applications. This interface demonstrates detection capabilities and user experience design.
+      </div>
+      
+      <div class="team-members">
+        <div class="member">
+          <div class="member-avatar">C</div>
+          <div class="member-name">Cameron</div>
+          <div class="member-role">System Architecture</div>
+        </div>
+        <div class="member">
+          <div class="member-avatar">A</div>
+          <div class="member-name">Ali</div>
+          <div class="member-role">Detection Algorithms</div>
+        </div>
+        <div class="member">
+          <div class="member-avatar">L</div>
+          <div class="member-name">Lorenzo</div>
+          <div class="member-role">UI/UX Design</div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 2rem; font-size: 0.9rem; color: var(--text-muted);">
+        © 2025 Group 8 • AI Image Detection Dashboard • Concept Design
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
